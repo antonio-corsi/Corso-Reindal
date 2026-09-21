@@ -1,0 +1,20 @@
+# =============================================================================
+# requirements_TM_pip.txt
+# Pacchetti del notebook "02_text_mining_nlp_ml.ipynb" da installare con PIP,
+# DOPO aver creato l'ambiente con requirements_TM_conda.txt:
+#
+#   conda activate textmining
+#   pip install -r requirements_TM_pip.txt
+#
+# Tutti gli altri pacchetti del notebook sono su conda-forge: qui resta solo il
+# modello linguistico italiano di spaCy.
+# =============================================================================
+
+# Modello italiano di spaCy "it_core_news_sm" (sezioni 2.8 e 6.6, facoltative).
+# Non e' un pacchetto di PyPI: pip lo installa dall'archivio ufficiale dei
+# modelli di spaCy. La versione 3.8.0 richiede spaCy 3.8.x (per questo nel file
+# conda spaCy e' vincolato a >=3.8,<3.9).
+# ATTENZIONE: se nel file conda si commenta la riga di spaCy, va commentata
+# anche questa, altrimenti pip installerebbe spaCy per conto suo da PyPI.
+# Comando equivalente: python -m spacy download it_core_news_sm
+it_core_news_sm @ https://github.com/explosion/spacy-models/releases/download/it_core_news_sm-3.8.0/it_core_news_sm-3.8.0-py3-none-any.whl

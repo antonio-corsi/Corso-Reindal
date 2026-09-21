@@ -1,0 +1,58 @@
+# =============================================================================
+# requirements_TM_conda.txt
+# Pacchetti del notebook "02_text_mining_nlp_ml.ipynb" disponibili su CONDA-FORGE
+# (canale verificato: conda-forge, con build per Windows 64 bit o "noarch").
+#
+# USO (nuovo ambiente, tutto in un colpo solo: e' il modo piu' sicuro, perche'
+# il risolutore di conda vede tutti i pacchetti insieme):
+#
+#   conda create -n corso-python-TM -c conda-forge --override-channels python=3.11
+#   conda activate corso-python-TM
+#   conda install -n corso-python-TM -c conda-forge --override-channels --file requirements_TM_conda.txt
+#   pip install -r requirements_TM_pip.txt
+#
+# Per verificare PRIMA di installare che ogni pacchetto esista per la propria
+# piattaforma, basta aggiungere --dry-run al comando: se un pacchetto
+# mancasse, conda lo nominerebbe in un errore "PackagesNotFoundError".
+#
+# NOTA: in questo file i commenti occupano sempre una riga intera. Conda non
+# accetta commenti in coda a una riga di pacchetto.
+# =============================================================================
+
+# --- OBBLIGATORI -------------------------------------------------------------
+# (nome conda-forge -> nome usato negli import del notebook, quando e' diverso)
+numpy
+pandas>=2.0
+# scikit-learn si importa come "sklearn"
+scikit-learn>=1.3
+matplotlib
+pypdf>=3.0
+reportlab
+joblib
+# ipykernel non e' importato dal notebook, ma serve a VS Code / Jupyter per
+# usare questo ambiente come kernel
+ipykernel
+
+# --- CONSIGLIATO (sezione 2.8: stemmer Snowball; senza, il notebook ripiega) --
+nltk
+
+# --- FACOLTATIVI (sezioni con la stella) --------------------------------------
+# Si possono commentare le righe che non interessano.
+#
+# PyMuPDF (sezione 1.6). Attenzione: su Windows la dipendenza "mupdf" di
+# conda-forge e' uno scaricamento di oltre 300 MB. In alternativa si puo'
+# commentare questa riga e usare "pip install pymupdf" (ruota autonoma, molto
+# piu' leggera). Licenza AGPL / commerciale: vedi sezione 1.6 del notebook.
+pymupdf
+#
+# spaCy (sezioni 2.8 e 6.6). Vincolato alla serie 3.8 perche' il modello
+# italiano elencato in requirements_TM_pip.txt e' la versione 3.8.0.
+spacy>=3.8,<3.9
+#
+# Sentence Transformers (sezioni 3.8 e 4.5). Porta con se' PyTorch e
+# transformers (alcune centinaia di MB).
+sentence-transformers
+# pytorch-cpu forza la variante SOLO CPU di PyTorch: scaricamento piu' piccolo
+# e nessun problema di compatibilita' tra versione di CUDA e scheda grafica.
+# Al notebook la GPU non serve. Per usare la GPU, togliere questa riga.
+pytorch-cpu
