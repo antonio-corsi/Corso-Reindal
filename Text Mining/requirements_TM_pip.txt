@@ -3,7 +3,7 @@
 # Pacchetti del notebook "02_text_mining_nlp_ml.ipynb" da installare con PIP,
 # DOPO aver creato l'ambiente con requirements_TM_conda.txt:
 #
-#   conda activate textmining
+#   conda activate tm
 #   pip install -r requirements_TM_pip.txt
 #
 # Tutti gli altri pacchetti del notebook sono su conda-forge: qui resta solo il

@@ -236,6 +236,14 @@ La presenza di:
 
 indica che l'ambiente è attivo.
 
+Una <u>ulteriore verifica dell'ambiente attivo</u>, che fornisce anche il cammino dell'ambiente, è la seguente:
+
+```text
+echo %CONDA_PREFIX%
+```
+
+Il prompt infatti mostra solo il nome dell'ambiente, la variabile dice anche **dove si trova l'ambiente sul disco**.
+
 ---
 
 ## 6. Isolare l'ambiente con `PYTHONNOUSERSITE`
@@ -481,7 +489,7 @@ conda install numpy pandas matplotlib scikit-learn
 Per **installare l'intera suite di package del corso**, dalla cartella **padre**:
 
 ```cmd
-conda install -n myenv -c conda-forge --override-channels --file requirements_TM_conda.txt --env-spec requirements.txt --dry-run
+conda install -n myenv -c conda-forge --override-channels --file requirements_TM_conda.txt
 ```
 
 Per questo specifico corso, c'è anche un package da installare con **pip**, `it_core_news_sm`, dopo il controllo a secco (***--dry-run***):
@@ -771,6 +779,15 @@ L'interprete stabilisce:
 
 > **quale Python stiamo utilizzando, quale pip, e quali package appartengono a quell'ambiente.**
 
+👉 Per **eseguire un file python** (suffisso *.py*) in VS Code è necessario <u>scegliere un'interprete</u> (e non un kernel),in questo modo:
+
+```text
+ctrl + shift + P
+   ↓
+Python Select Interpreter
+   ↓
+myenv (X.YY.ZZ)
+```
 ---
 
 ### Il kernel Jupyter
@@ -783,7 +800,7 @@ Il **kernel** è un processo attivo che:
 - riceve il codice delle celle dal notebook;
 - lo esegue;
 - restituisce i risultati a VS Code;
-- mantiene in memoria lo stato della sessione.
+- **mantiene in memoria lo stato della sessione**.
 
 Per esempio, se in una cella eseguiamo:
 
@@ -822,71 +839,93 @@ KERNEL     = la sessione attiva che usa quell'interprete
              per eseguire le celle del notebook
 ```
 
-La relazione completa è:
+👉 La relazione completa è dunque:
 
 ```text
 Ambiente Conda
 myenv
       │
-      ├── Python 3.12
+      ├── Python 3.12  (per eseguire file .py)
       │      │
       │      └── INTERPRETE
-      │
+      │              |
+      |              |
+      |              ▼
+      |        linee di codice 
+      |            eseguite
+      |
       └── ipykernel
              │
              ▼
         KERNEL JUPYTER
              │
              ▼
-       Notebook .ipynb
+       notebook jupyter (per eseguire file .ipynb)
              │
              ▼
-        celle eseguite
+        celle di codice
+           eseguite
 ```
 
 ---
 
 ### Installare `ipykernel`
 
-Perché l'ambiente Conda possa essere utilizzato come kernel di un notebook Jupyter, installiamo il package:
+Perché l'ambiente Conda possa essere utilizzato come kernel di un notebook Jupyter, **installiamo il package `ipykernel`**
 
-```text
-ipykernel
-```
-
-Prima attivare l'ambiente:
+Prima, come sempre, dobbiamo attivare l'ambiente **da terminale**:
 
 ```cmd
 conda activate myenv
 ```
 
-quindi installare:
+e quindi installare:
 
 ```cmd
 conda install ipykernel
 ```
 
-Se si vuole specificare esplicitamente il canale utilizzato nel corso:
+Ancor meglio è forzare esplicitamente l'uso del canale *conda-forge*:
 
 ```cmd
 conda install -c conda-forge --override-channels ipykernel
 ```
 
-`ipykernel` è il componente che collega l'interprete Python dell'ambiente alla modalità di esecuzione richiesta dai notebook Jupyter.
+Come detto, dunque, `ipykernel` è il **componente che collega l'interprete Python dell'ambiente alla modalità di esecuzione richiesta dai notebook Jupyter**.
 
 In termini semplici:
 
 ```text
-python.exe
-    │
-    ▼
-ipykernel
-    │
-    ▼
-kernel utilizzabile da Jupyter / VS Code
+VS Code / Jupyter  (interfaccia: celle, output)
+        │   ▲
+        │   │   protocollo Jupyter (messaggi: "esegui questo codice", "ecco il risultato")
+        ▼   │
+┌─────────────────────────────────────┐
+│  kernel = processo python.exe       │
+│           che esegue ipykernel      │
+│  (Python + pacchetti dell'ambiente) │
+└─────────────────────────────────────┘
 ```
 
-> Normalmente non è necessario eseguire manualmente `python -m ipykernel install`: VS Code, con le estensioni **Python** e **Jupyter**, rileva gli ambienti Conda disponibili e permette di selezionarli direttamente.
+---
+> 👉 Con altri strumenti, come **Jupyter Notebook o JupyterLab**, se essi vengono avviati da un ambiente diverso da `myenv`, è necessario anche **registrare il kernel**, cioè indicare a Jupyter quale interprete Python avviare. [Diversamente, se l'ambiente di avvio è `myenv`, il kernel predefinito è già quello dell'ambiente, e la registrazione non serve].
+>
+> La <u>sequenza completa e corretta</u> per **installare e registrare il kernel** è dunque:
+>
+> ```cmd
+> conda activate myenv
+> conda install -c conda-forge --override-channels ipykernel
+> python -m ipykernel install --user --name myenv --display-name "Python (myenv)"
+> ```
+>
+> 👉 In VS Code, invece, la registrazione (terzo comando) non è necessaria: le estensioni **Python** e **Jupyter** rilevano gli ambienti Conda disponibili e permettono di selezionarli direttamente. Resta necessaria l'installazione di `ipykernel` (secondo comando); se manca, VS Code propone di installarlo al primo avvio di una cella. In questo caso, comunque, conviene sempre installarlo da terminale, anziché delegare l'operazione a VS Code: in questo modo scegliamo noi il canale da cui scaricarlo (*conda-forge*) e, se qualcosa va storto, **vediamo per intero i messaggi di errore**.
+
+
+
+
+
+
+
 
 ---
 
@@ -934,20 +973,25 @@ Note:
 <br>
 
 > 🛑 Esiste una **scorciatoia di navigazione nell'albero della cartelle di Windows**: navigare da Explorer è molto più veloce che da terminale!<br>
-> E’ sufficiente infatti, da terminale, eseguire:
+
+> E’ sufficiente infatti, da terminale, eseguire (una volta sola, in modo persistente per le successive sessioni di terminale):
 > ```cmd
 > conda init cmd.exe
 > # oppure
 > conda init powershell
 > ```
+> Se si ottiene “No action taken” significa che l’inizializzazione era già stata fatta.
+>
+> A questo, punto dobbiamo chiudere e riaprire il terminale, `conda init` infatti modifica impostazioni che il terminale legge solo all'avvio.
 >
 > Si aprirà un terminale senza il prefisso base (tipico di conda), ma sarà sufficiente eseguire:
 > ```cmd
 > conda --version
 > conda activate <myenv>
 > ```
+> 
+> 👉 A questo punto il terminale è **equivalente ad un miniconda prompt**.
 >
-> Se invece si ottiene “No action taken” significa che l’inizializzazione era già stata fatta.
 >
 > A questo punto la scorciatoia è attiva e possiamo dunque utilizzarla, in questo modo:
 > - navigare nell’explorer di Windows sino alla cartella desiderata (es. *myenv*) e selezionare con il mouse il percorso in alto nella barra
@@ -1093,17 +1137,34 @@ Microsoft
 
 > L'estensione **Markdown PDF** è opzionale: serve soltanto se si desidera esportare e stampare comodamente i file Markdown direttamente da VS Code.
 
-## 13. Selezionare il kernel in VS Code
+## 13. Selezionare il kernel in VS Code (con file .ipynb)
 
 Aprire il notebook `.ipynb`.
 
-In alto a destra scegliere:
+In alto a destra in genere compare:
 
 ```text
 Select Kernel
 ```
 
-VS Code può mostrare una finestra con diverse sorgenti possibili del kernel:
+ed occorre allora fare clic su di esso.
+
+> 👉 Non sempre compare `Select Kernel`: a volte VS Code seleziona il kernel automaticamente, leggendo i **metadati** del notebook (le informazioni salvate nel file `.ipynb` insieme alle celle, tra cui il **nome del kernel** usato l'ultima volta) oppure ricordando la scelta fatta in precedenza. In questo caso, in alto a destra **compare direttamente il nome del kernel**.<br>
+> Prima di iniziare ad eseguire le celle del notebook conviene comunque **controllare quel nome**: <u>se il notebook proviene da un altro computer</u>, **i metadati si riferiscono all'ambiente di chi l'ha creato**, e <u>VS Code potrebbe dunque proporre un ambiente diverso</u> da quello che vogliamo usare. Per cambiarlo basta fare clic sul nome e selezionare `myenv`.
+
+Tornando al caso più frequente, dopo il click su `Select kernel`, a seconda dei casi VS Code mostra **uno dei due elenchi seguenti**.
+
+**Caso 1 – VS Code suggerisce già un ambiente.** In cima all'elenco compare **il kernel proposto**, ad esempio:
+
+```text
+myenv (Python 3.11.11)   ~\miniconda3\envs\myenv\python.exe
+Select Another Kernel...
+```
+
+Se nome e percorso corrispondono all'ambiente che vogliamo usare, basta <u>selezionare la prima riga</u>. Altrimenti scegliere **Select Another Kernel...**, compare una lista e ci si allaccia al caso 2.
+
+**Caso 2 – VS Code non ha suggerimenti.**<br> 
+VS Code mostra una finestra con diverse sorgenti possibili del kernel:
 
 ```text
 Python Environments...
@@ -1111,13 +1172,13 @@ Jupyter Kernel...
 Existing Jupyter Server...
 ```
 
-Nel nostro corso, con **Miniconda + ambiente Conda locale**, la scelta corretta è:
+Nel nostro caso, con **Miniconda + ambiente Conda locale**, la scelta corretta è:
 
 ```text
 Python Environments...
 ```
 
-Questa voce mostra gli ambienti Python disponibili sul computer, compresi gli ambienti Conda.
+Questa voce **mostra gli ambienti Python disponibili sul computer, compresi gli ambienti Conda**.
 
 Selezionare quindi l'ambiente del corso, ad esempio:
 
@@ -1125,33 +1186,48 @@ Selezionare quindi l'ambiente del corso, ad esempio:
 Python 3.12 (myenv)
 ```
 
-Il flusso è:
+Il flusso generale è dunque:
 
 ```text
+Cosa facciamo noi (in VS Code)
+
 Select Kernel
      ↓
 Python Environments...
      ↓
 myenv
+
+
+Cosa fa VS Code (dietro le quinte)
+
+all'esecuzione della prima cella avvia il kernel:
+python.exe dell'ambiente myenv + ipykernel
      ↓
-Python 3.12 dell'ambiente Conda
+per ogni cella eseguita:
+invia il codice al kernel  ⇄  riceve output, risultati ed errori
      ↓
-ipykernel
-     ↓
-esecuzione delle celle del notebook
+mostra i risultati sotto la cella
 ```
 
+---
+> 📌 In ogni caso, in qualsiasi dei due casi, prima di eseguire le celle del notebook conviene verificare il **percorso** mostrato accanto al nome del kernel: è il percorso del `python.exe` dell'ambiente (`~` indica la cartella dell'utente) e <u>indica senza ambiguità quale ambiente verrà usato</u>.
+
+---
+
 #### Significato delle tre opzioni
+
+Vediamo ora più in dettaglio il significato delle tre opzioni del caso 2.
 
 **Python Environments...**
 
 Permette di scegliere uno degli ambienti Python installati sul computer:
-
 - ambienti Conda;
 - ambienti `venv`;
 - altre installazioni Python locali.
 
 È **l'opzione da utilizzare nel corso**.
+
+👉 In VS Code, quando si sceglie *Python Environments...*, **il kernel viene costruito a partire da uno specifico interprete Python appartenente a un ambiente Conda o virtuale**.
 
 ---
 
@@ -1159,7 +1235,7 @@ Permette di scegliere uno degli ambienti Python installati sul computer:
 
 Permette di scegliere un **kernel Jupyter già registrato** nel sistema tramite una *kernelspec*.
 
-Per esempio, un kernel può essere registrato manualmente con:
+Per esempio, un kernel può essere stato stato registrato manualmente con:
 
 ```cmd
 python -m ipykernel install --user --name myenv
@@ -1211,7 +1287,7 @@ myenv
       └── package installati nell'ambiente
 ```
 
-Tutte le celle del notebook saranno quindi eseguite dal **kernel associato all'ambiente `myenv`**.
+📌 Tutte le celle del notebook saranno quindi eseguite dal **kernel associato all'ambiente `myenv`**.
 
 ## 14. Flusso di lavoro consigliato durante il corso
 
@@ -1305,7 +1381,7 @@ aprire **Miniconda Prompt** dal menu Start ed eseguire:
 conda init cmd.exe
 ```
 
-Chiudere completamente Windows Terminal e riaprirlo.
+Chiudere completamente Windows Terminal e riaprirlo. [`conda init` infatti modifica impostazioni che il terminale legge solo all'avvio.]
 
 ---
 
@@ -1385,8 +1461,6 @@ e, dopo l'attivazione dell'ambiente:
 
 
 # In caso di problemi con VS Code / Jupyter
-
-Per prima cosa provare sempre il bottone in alto `Restart Kernel` e poi rieseguire le celle codice dall'inizio del notebook. Spesso risolve.
 
 Se VS Code non riconosce correttamente l'ambiente Conda, il kernel non compare oppure il notebook non viene eseguito come previsto, aprire la **Command Palette** con:
 
@@ -1492,7 +1566,7 @@ Jupyter
 # Riepilogo dei comandi
 
 ```cmd
-:: inizializzazione: normalmente una sola volta
+:: inizializzazione: normalmente una sola volta (persistente per tutte le sessioni successive di terminale cmd)
 conda init cmd.exe
 
 :: creare l'ambiente del corso

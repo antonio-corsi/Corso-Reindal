@@ -6,9 +6,9 @@
 # USO (nuovo ambiente, tutto in un colpo solo: e' il modo piu' sicuro, perche'
 # il risolutore di conda vede tutti i pacchetti insieme):
 #
-#   conda create -n corso-python-TM -c conda-forge --override-channels python=3.11
-#   conda activate corso-python-TM
-#   conda install -n corso-python-TM -c conda-forge --override-channels --file requirements_TM_conda.txt
+#   conda create -n tm -c conda-forge --override-channels python=3.11
+#   conda activate tm
+#   conda install -n tm -c conda-forge --override-channels --file requirements_TM_conda.txt
 #   pip install -r requirements_TM_pip.txt
 #
 # Per verificare PRIMA di installare che ogni pacchetto esista per la propria
@@ -29,6 +29,8 @@ matplotlib
 pypdf>=3.0
 reportlab
 joblib
+plotly 
+nbformat
 # ipykernel non e' importato dal notebook, ma serve a VS Code / Jupyter per
 # usare questo ambiente come kernel
 ipykernel
